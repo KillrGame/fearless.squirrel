@@ -81,25 +81,23 @@ function bullet_collision()
     }
 
 }
-const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const player_collision2 = async () => {
-    if (clock.getElapsedTime() < 1)
-        return;
-    var x = player1.graphic.position.x + WIDTH / 2;
-    var y = player1.graphic.position.y + HEIGHT / 2;
 
+    var life = player1.life;
     var x = Math.abs(player1.graphic.position.x - player2.graphic.position.x);
     var y = Math.abs(player1.graphic.position.y - player2.graphic.position.y);
     if (x + y < 20)
     {
-        player1.life -= 1;
+        setTimeout(() => {  player1.life = life-1; }, 5000);
     }
-    await delay(5000);
 }
 
 function player_collision()
 {
+
+    var x = player1.graphic.position.x + WIDTH / 2;
+    var y = player1.graphic.position.y + HEIGHT / 2;
     //collision between player and walls
     
 
