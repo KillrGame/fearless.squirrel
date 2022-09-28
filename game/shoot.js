@@ -6,6 +6,13 @@ var bullet_player1_material = new THREE.MeshLambertMaterial(
     transparent: false
 });
 
+function move2(){
+    if (player2.graphic.position.x < WIDTH)
+        player2.graphic.position.x += 2;
+    else
+        player2.graphic.position.x -= 2;
+}
+
 function shoot()
 {
     if (keyboard.pressed("space") && bulletTime1 + 0.8 < clock.getElapsedTime())
@@ -36,7 +43,27 @@ function collisions()
 {
     bullet_collision();
     player_collision();
+    player_collision2();
     player_falling();
+    kill();
+}
+
+function kill()
+{
+    //collision between bullet and ennemy
+    for (var i = 0; i < player1.bullets.length; i++)
+    {
+        var x = Math.abs(player1.bullets[i].position.x - player2.graphic.position.x);
+        var y = Math.abs(player1.bullets[i].position.y - player2.graphic.position.y);
+        if (x < 10 && y < 10)
+        {
+            var selectedObject = scene.getObjectByName("player2");
+            scene.remove(player2.graphic);
+            scene.remove(player1.bullets[i]);
+            console.log(scene);
+        }
+    }
+
 }
 
 function bullet_collision()
@@ -54,20 +81,36 @@ function bullet_collision()
     }
 
 }
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+const player_collision2 = async () => {
+    if (clock.getElapsedTime() < 1)
+        return;
+    var x = player1.graphic.position.x + WIDTH / 2;
+    var y = player1.graphic.position.y + HEIGHT / 2;
+
+    var x = Math.abs(player1.graphic.position.x - player2.graphic.position.x);
+    var y = Math.abs(player1.graphic.position.y - player2.graphic.position.y);
+    if (x + y < 20)
+    {
+        player1.life -= 1;
+    }
+    await delay(5000);
+}
 
 function player_collision()
 {
     //collision between player and walls
-    var x = player1.graphic.position.x + WIDTH / 2;
-    var y = player1.graphic.position.y + HEIGHT / 2;
+    
 
     if ( x > WIDTH )
         player1.graphic.position.x -= x - WIDTH;
+    if ( x < 0 )
+        player1.graphic.position.x += x;
     if ( y < 0 )
-        player1.graphic.position.y -= y;
+        player1.graphic.position.y += y;
     if ( y > HEIGHT )
         player1.graphic.position.y -= y - HEIGHT;
-
 }
 
 function player_falling()
@@ -87,7 +130,6 @@ function player_falling()
         var tileY = (element[1]) | 0;
         var mtileX = (element[0] + sizeOfTileX) | 0;
         var mtileY = (element[1] + sizeOfTileY) | 0;
-
         if ((x > tileX)
             && (x < mtileX)
             && (y > tileY) 
